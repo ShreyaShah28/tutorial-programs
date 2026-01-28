@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <title>Weather Forecast</title>
+</head>
+
+<body class="bg-purple-200 text-purple-700">
+    <div id="loadingSpinnerDiv" class="hidden flex-col h-screen items-center justify-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-4 border-solid border-purple-500 border-t-transparent"
+            role="status" aria-label="loading">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <p>Loading</p>
+    </div>
+    <div id="containerOfAllElements" class=" flex flex-col items-center justify-center pt-16">
+        <div class=" w-full sm:w-2/3 md:w-1/2 lg:w-1/3">
+            <div class="mx-10 p-2 bg-purple-300 rounded-3xl items-baseline flex justify-between">
+                <div class="w-full">
+                    <i class="fa-solid fa-location-dot opacity-70 text-purple-600"></i>
+                    <input type="text" name="weatherLocation" id="weatherLocation" placeholder="Search Location"
+                        autocomplete="off" class="bg-purple-300 w-11/12 placeholder-purple-100 focus:outline-none">
+                </div>
+                <button onclick="showWeatherFunction()"><i
+                        class="fa-solid fa-arrow-right fa-font-medium bg-purple-100 text-purple-600 rounded-full p-2"></i></button>
+            </div>
+            <p id="errorMessage" class="mx-10 p-2 hidden text-red-400 text-base">
+                * Input a valid Location
+            </p>
+        </div>
+        <div class="p-5 flex justify-center">
+            <p id="cityNameText" class="text-5xl text-wrap text-center font-medium"></p>
+        </div>
+        <div class="flex flex-row h-1/4 items-center justify-center">
+            <img src="" alt="weatherImage" id="weatherEmoji" class="min-h-fit w-auto" />
+            <div>
+                <p id="weatherDescription" class="font-medium"></p>
+                <p id="weatherTemperature" class="font-medium text-5xl"></p>
+                <p id="currentDateText" class="text-xs text-purple-400"></p>
+            </div>
+        </div>
+        <div class="flex flex-row text-center bg-purple-100 rounded-3xl p-2">
+            <div id="airQualityDiv" class="h-20 w-16 flex flex-col items-center justify-center text-center p-2">
+                <i class="fa-solid fa-smog opacity-70 text-purple-300"></i>
+                <p id="airQualityText" class="text-base p-1">123</p>
+                <p class="text-xs font-thin">Air Quality</p>
+            </div>
+            <div id="weatherPressure" class="h-20 w-16 flex flex-col items-center justify-center text-center p-2">
+                <i class="fa-solid fa-gauge-high opacity-70 text-purple-300"></i>
+                <p id="pressureText" class="text-base p-1"></p>
+                <p class="text-xs font-thin">Pressure</p>
+            </div>
+            <div id="weatherUv" class="h-20 w-16 flex flex-col items-center justify-center text-center p-2">
+                <i class="fa-regular fa-sun opacity-70 text-purple-300"></i>
+                <p id="uvText" class="text-base p-1"></p>
+                <p class="text-xs font-thin">UV</p>
+            </div>
+            <div id="weatherPrecaution" class="h-20 w-16 flex flex-col items-center justify-center text-center p-2">
+                <i class="fa-solid fa-droplet opacity-70 text-purple-300"></i>
+                <p id="precautionText" class="text-base p-1"></p>
+                <p class="text-xs font-thin">Precaution</p>
+            </div>
+            <div id="weatherWindSpeed" class="h-20 w-16 flex flex-col items-center justify-center text-center p-2">
+                <i class="fa-solid fa-wind opacity-70 text-purple-300"></i>
+                <p id="windText" class="text-base p-1"></p>
+                <p class="text-xs font-thin">Wind</p>
+            </div>
+            <div id="visibilityArea" class="h-20 w-16 flex flex-col items-center justify-center text-center p-2">
+                <i class="fa-regular fa-eye opacity-70 text-purple-300"></i>
+                <p id="visibilityText" class="text-base p-1"></p>
+                <p class="text-xs font-thin">Visibility</p>
+            </div>
+        </div>
+        <div class="flex flex-row justify-center mt-10 gap-3 flex-wrap w-11/12" id="threeDaysWeatherForecast">
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+    const loadingSpinnerDiv = document.getElementById('loadingSpinnerDiv');
+    const containerOfAllElements = document.getElementById('containerOfAllElements');
+    const errorMessage = document.getElementById('errorMessage');
+    const cityNameText = document.getElementById('cityNameText');
+    const weatherEmoji = document.getElementById('weatherEmoji');
+    const weatherDescription = document.getElementById('weatherDescription');
+    const weatherTemperature = document.getElementById('weatherTemperature');
+    const currentDateText = document.getElementById('currentDateText');
+    const weatherLocation = document.getElementById('weatherLocation');
+    const airQualityText = document.getElementById('airQualityText');
+    const pressureText = document.getElementById('pressureText');
+    const uvText = document.getElementById('uvText');
+    const precautionText = document.getElementById('precautionText');
+    const windText = document.getElementById('windText');
+    const visibilityText = document.getElementById('visibilityText');
+    const daysWeatherForecast = document.getElementById('threeDaysWeatherForecast');
+    const apiKey = '14653036671447089b594953261301';
+
+    loadWeatherData();
+
+    weatherLocation.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            showWeatherFunction();
+        }
+    });
+    function showWeatherFunction() {
+        const location = weatherLocation.value.trim();
+        if (location == '') {
+            errorMessage.classList.replace('hidden', 'flex');
+            return;
+        }
+        errorMessage.classList.replace('flex', 'hidden');
+        loadWeatherData(location);
+    }
+    async function loadWeatherData(location) {
+        try {
+            if (!location || location === '') {
+                location = 'Bhavnagar';
+            }
+            containerOfAllElements.classList.replace('flex', 'hidden');
+            loadingSpinnerDiv.classList.replace('hidden', 'flex');
+
+            const weatherUrl = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${location}&days=7&aqi=yes`;
+            const urlResponse = await fetch(weatherUrl);
+            const data = await urlResponse.json();
+            if (!urlResponse.ok || data.error) {
+                throw new Error(data.error ? data.error.message : "Could not fetch weather data!");
+            }
+
+            errorMessage.classList.replace('flex', 'hidden');
+            console.log(data);
+            if (data.location.region == '') {
+                cityNameText.innerHTML = `${data.location.name}, ${data.location.country}`;
+            } else {
+                cityNameText.innerHTML = `${data.location.name}, ${data.location.region}`;
+            }
+            daysWeatherForecast.innerHTML = '';
+            weatherEmoji.setAttribute('src', showWeatherEmoji(data));
+            weatherDescription.innerHTML = data.current.condition.text;
+            weatherTemperature.innerHTML = `${data.current.temp_c}&deg;C`;
+            const localTime = data.forecast.forecastday[0].date;
+            const date = new Date(localTime.replace(" ", "T"));
+            const dayName = date.toLocaleDateString("en-US", { weekday: "long" });
+            const formatterLong = new Intl.DateTimeFormat("en-GB", { year: "numeric", month: "long", day: "numeric", });
+            const todayDate = formatterLong.format(date);
+            currentDateText.innerHTML = `${dayName} ${todayDate}`;
+            const airQualityTextValue = Math.floor(data.current.air_quality.co);
+            airQualityText.innerHTML = airQualityTextValue;
+            pressureText.innerHTML = `${data.current.pressure_mb}mb`;
+            uvText.innerHTML = data.current.uv;
+            precautionText.innerHTML = `${data.current.precip_mm}mm`;
+            windText.innerHTML = `${data.current.wind_kph}km/h`;
+            visibilityText.innerHTML = `${data.current.vis_km}km`;
+
+            daysForecastDisplay(data);
+        }
+        catch(error) {
+            console.error(error);
+            errorMessage.classList.replace('hidden', 'flex');
+        }
+        finally {
+            loadingSpinnerDiv.classList.replace('flex', 'hidden');
+            containerOfAllElements.classList.replace('hidden', 'flex');
+        }
+    }
+    function daysForecastDisplay(data) {
+        data.forecast.forecastday.forEach(element => {
+            const detailDiv = document.createElement('div');
+            detailDiv.className = "flex flex-col justify-center bg-purple-100 rounded-3xl p-5 hover:shadow-lg";
+            const dayText = document.createElement('p');
+            const dateText = document.createElement('p');
+            const iconImage = document.createElement('img');
+            const temperatureText = document.createElement('p');
+
+            const localTime = element.date;
+            const date = new Date(localTime.replace(" ", "T"));
+            const dayName = date.toLocaleDateString("en-US", { weekday: "long" });
+            const formatterLong = new Intl.DateTimeFormat("en-GB", { year: "numeric", month: "long", day: "numeric", });
+            const todayDate = formatterLong.format(date);
+
+            dayText.innerHTML = dayName;
+            dayText.className = "text-lg";
+            dateText.innerHTML = todayDate;
+            dateText.className = "text-sm";
+            iconImage.src = `https:${element.day.condition.icon}`;
+            temperatureText.innerHTML = `${element.day.maxtemp_c}&deg;C`;
+            temperatureText.className = "text-xl";
+            threeDaysWeatherForecast.appendChild(detailDiv);
+            detailDiv.appendChild(dayText);
+            detailDiv.appendChild(dateText);
+            detailDiv.appendChild(iconImage);
+            detailDiv.appendChild(temperatureText);
+        });
+    }
+    function showWeatherEmoji(data) {
+        const iconUrl = data.current.condition.icon.replace("64x64", "128x128");
+        return "https:" + iconUrl;
+    }
+</script>

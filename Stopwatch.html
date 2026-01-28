@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex flex-col items-center bg-[hsl(0,0%,95%)]">
+    <h1 id="myH1" class="text-6xl font-sans text-[hsl(0,0%,25%)]">Stopwatch</h1>
+
+    <div id="container" class="flex flex-col items-center p-8 border-4 border-solid rounded-full bg-white">
+        <div id="display" class="text-7xl font-mono font-bold text-sh text-[hsl(0,0%,30%)] mb-6" style="text-shadow: 2px 2px 2px hsla(62, 68%, 68%, 0.75);">
+            00:00:00:00
+        </div>
+
+        <div class="" id="controls">
+            <button id="startBtn" onclick="start()" class="py-2 px-3 text-2xl font-bold pt-3 pr-5 m-1 min-w-32 border-none rounded-xl cursor-pointer text-white bg-green-800 hover:bg-green-600">Start</button>
+            <button id="stopBtn" onclick="stop()" class="py-2 px-3 text-2xl font-bold pt-3 pr-5 m-1 min-w-32 border-none rounded-xl cursor-pointer text-white bg-red-800 hover:bg-red-600">Stop</button>
+            <button id="resetBtn" onclick="reset()" class="py-2 px-3 text-2xl font-bold pt-3 pr-5 m-1 min-w-32 border-none rounded-xl cursor-pointer text-white bg-blue-800 hover:bg-blue-600">Reset</button>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+    const display=document.getElementById("display");
+    let timer = null;
+    let startTime = 0;
+    let elapsedTime = 0;
+    let isRunning = false;
+
+    function start(){
+        if(!isRunning){
+            startTime=Date.now()-elapsedTime;
+            timer = setInterval(update,10);
+            isRunning=true;
+        }
+    }
+    function stop(){
+        if(isRunning){
+            clearInterval(timer);
+            elapsedTime=Date.now()-startTime;
+            isRunning=false;
+        }
+    }
+    function reset(){
+        clearInterval(timer);
+        startTime=0;
+        elapsedTime=0;
+        isRunning=false;
+        display.textContent="00:00:00:00";
+    }
+    function update(){
+        const currentTime=Date.now();
+        elapsedTime=currentTime-startTime;
+        let hours = Math.floor(elapsedTime/(1000*60*60));
+        let minutes = Math.floor(elapsedTime/(1000*60) % 60);
+        let seconds= Math.floor(elapsedTime/1000 %60);
+        let milliseconds=Math.floor(elapsedTime % 1000 /10);
+
+        hours = String(hours).padStart(2,0);
+        minutes = String(minutes).padStart(2,0);
+        seconds = String(seconds).padStart(2,0);
+        milliseconds = String(milliseconds).padStart(2,0);
+        display.textContent= `${hours}:${minutes}:${seconds}:${milliseconds}`;
+    }
+</script>

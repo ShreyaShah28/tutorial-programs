@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Document</title>
+</head>
+
+<body>
+  <div class="flex items-center justify-center">
+    <!-- <div
+    class="animate-spin rounded-full h-12 w-12 border-4 border-solid border-purple-500 border-t-transparent"
+    role="status"
+    aria-label="loading"
+  >
+    <span class="sr-only">Loading...</span>
+  </div>
+</div> -->
+</body>
+
+</html>
+<script>
+  runApi();
+  async function runApi() {
+    const photosRes = await fetch('https://jsonplaceholder.typicode.com/posts');
+
+    const photos = await photosRes.json();
+    console.log(photos);
+
+    // const apiKey = '14653036671447089b594953261301';
+    // const location = 'Bhavnagar';
+    // let yesterday = new Date(); // Create a new date object for today
+    // yesterday.setDate(yesterday.getDate() - 1);
+    // yesterday=yesterday.toISOString().split('T')[0];
+    // console.log(yesterday);
+    // let tomorrow = new Date(); // Create a new date object for today
+    // tomorrow.setDate(tomorrow.getDate() + 1);
+    // tomorrow=tomorrow.toISOString().split('T')[0];
+    // console.log(tomorrow);
+    // //const weatherUrl = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=bhavnagar&days=3&dt=2026-01-27%262026-01-28&aqi=aqi%3Dyes`;
+    // const weatherUrl = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${location}&days=7&aqi=yes`;
+    // const urlResponse = await fetch(weatherUrl);
+    // const data = await urlResponse.json();
+    // if (!urlResponse.ok || data.error) {
+    //     throw new Error(data.error ? data.error.message : "Could not fetch weather data!");
+    // }
+    // console.log(data);
+  }
+</script>

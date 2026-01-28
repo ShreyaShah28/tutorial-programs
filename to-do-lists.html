@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>To-Do Tasks</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+
+<body class="bg-yellow-100 font-sans flex flex-col items-center min-h-screen mt-10 text-left">
+
+    <form id="toDoListsForm" action=""
+        class="text-3xl bg-orange-400 text-white p-5 md:w-full lg:w-4/5 rounded-lg border border-orange-200 gap-3">
+
+        <div class="flex flex-row justify-between p-2">
+            <span class="text-5xl p-1">Tasks:</span>
+
+            <span id="taskSearchDiv" class="hidden  bg-orange-300  rounded-full text-2xl text-white p-4 py-1 ">
+                <i class="fa-solid fa-search text-2xl cursor-pointer p-4" id="searchIcon"></i>
+                <input type="text" id="searchTaskTextbox" placeholder="Search..." value=""
+                    class="border-none outline-none focus:outline-none bg-orange-300">
+            </span>
+        </div>
+        <hr>
+        <hr><br>
+
+        <button id="addTaskModuleBtn" class="bg-orange-300 text-gray-500 text-xl p-4 rounded-2xl w-1/5">
+            <i class="fa fa-plus" id="addTaskIcon"></i>
+            Add Task
+        </button>
+        <div id="taskModal"
+            class="hidden flex-col items-center fixed z-10 left-0 top-0 w-full h-full overflow-auto bg-orange-300/75">
+            <div id="addTaskDiv" class="gap-3 flex flex-col items-center bg-orange-400 rounded-xl w-4/5 h-2/5">
+                <div class="flex justify-end w-full">
+                    <button type="button" id="closeModalButton" onclick="closeModalFunction()" class="p-4">
+                        <span class="">&times;</span>
+                    </button>
+                </div>
+                <div class="flex flex-row w-4/5 h-1/2 items-center justify-between">
+                    <span class="w-full bg-orange-400 pt-10 p-5 overflow-hidden">
+                        <input type="text" id="newTaskTextbox" placeholder="Enter New Task" value=""
+                            class="text-2xl bg-orange-300 text-white p-4 w-full border-none outline-none focus:outline-none rounded-full">
+                        <p id="inputErrorMsgDisplay" class="text-red-600 text-lg"></p><br>
+                    </span>
+                    <button id="taskSubmitButton" type="submit"
+                        class="text-2xl bg-orange-500 text-white p-4 ml-3 rounded-md hover:bg-orange-600 h-min">
+                        Add
+                    </button>
+                </div>
+                <input type="date" id="newTaskDueDate"
+                    class="bg-orange-300 scheme-light text-black text-lg p-4 rounded-lg self-auto">
+            </div>
+        </div><br><br>
+
+        <div id="taskDistributionDiv" class="flex gap-3 text-base m-2 justify-between">
+            <button type="button" id="showAllTasksButton"
+                class="px-4 py-1.5 w-28 rounded-full text-white hover:bg-orange-600 transition bg-orange-700 scale-105">All</button>
+            <button type="button" id="showDoneTasksButton"
+                class="px-4 py-1.5 w-28 rounded-full text-white hover:bg-orange-600 transition">Done</button>
+            <button type="button" id="showPendingTasksButton"
+                class="px-4 py-1.5 w-28 rounded-full text-white hover:bg-orange-600 transition">Pending</button>
+        </div>
+        <table id="taskListDisplayTable" class="w-full">
+
+        </table>
+        <p class="text-orange-200 text-center" id="noTaskDisplayText">No tasks to display</p>
+    </form>
+
+    <script>
+        let newTaskId = null;
+        const storageKey = 'tasks';
+        function getTasks() {
+            return JSON.parse(localStorage.getItem(storageKey)) || [];
+        }
+        function setTasks(tasks) {
+            localStorage.setItem(storageKey, JSON.stringify(tasks));
+        }
+
+        const newTask = document.getElementById('newTaskTextbox');
+        const searchTask = document.getElementById('searchTaskTextbox');
+        const toDoListsForm = document.getElementById('toDoListsForm');
+        const taskSubmitButton = document.getElementById('taskSubmitButton');
+        const taskSearchButton = document.getElementById('taskSearchButton');
+        const noTaskDisplayText = document.getElementById('noTaskDisplayText');
+        const taskSearchDiv = document.getElementById('taskSearchDiv');
+        const taskDistributionDiv = document.getElementById('taskDistributionDiv');
+        const taskListDisplayTable = document.getElementById('taskListDisplayTable');
+        const newTaskDueDate = document.getElementById('newTaskDueDate');
+        const today = new Date().toISOString().split('T')[0];
+        const showAllTasksButton = document.getElementById('showAllTasksButton');
+        const showDoneTasksButton = document.getElementById('showDoneTasksButton');
+        const showPendingTasksButton = document.getElementById('showPendingTasksButton');
+        const addTaskModuleBtn = document.getElementById('addTaskModuleBtn');
+        const taskModal = document.getElementById('taskModal');
+
+        addTaskModuleBtn.addEventListener('click', () => {
+            const taskModal = document.getElementById('taskModal');
+            taskModal.classList.replace('hidden', 'flex');
+        })
+
+        function showFlex(el) {
+            el.classList.remove('hidden');
+            el.classList.add('flex');
+        }
+
+        function hideFlex(el) {
+            el.classList.add('hidden');
+            el.classList.remove('flex');
+        }
+
+        function setActiveButton(activeBtn) {
+            [showAllTasksButton, showDoneTasksButton, showPendingTasksButton].forEach(btn => {
+                btn.classList.remove('bg-orange-700', 'scale-105');
+            });
+            activeBtn.classList.add('bg-orange-700', 'scale-105');
+        }
+
+        function closeModalFunction() {
+            taskModal.classList.replace('flex', 'hidden');
+        }
+
+        showAllTasksButton.addEventListener('click', () => {
+            fetchTasks(getTasks());
+            setActiveButton(showAllTasksButton);
+            // showAllTasksButton.classList.remove('bg-orange-500');
+            // showAllTasksButton.classList.add('bg-orange-700', 'scale-105');
+            // showDoneTasksButton.classList.remove('bg-orange-700', 'scale-105');
+            // showPendingTasksButton.classList.remove('bg-orange-700', 'scale-105');
+        })
+
+        let showDistributionButtons = null;
+        showDoneTasksButton.addEventListener('click', () => {
+            showDistributionButtons = true;
+            fetchTasks(getTasks().filter(t => t.complete !== false));
+            setActiveButton(showDoneTasksButton);
+            // showDoneTasksButton.classList.remove('bg-orange-500');
+            // showAllTasksButton.classList.remove('bg-orange-700', 'scale-105');
+            // showDoneTasksButton.classList.add('bg-orange-700', 'scale-105');
+            // showPendingTasksButton.classList.remove('bg-orange-700', 'scale-105');
+        })
+
+        showPendingTasksButton.addEventListener('click', () => {
+            showDistributionButtons = true;
+            fetchTasks(getTasks().filter(t => t.complete !== true));
+            setActiveButton(showPendingTasksButton);
+            // showPendingTasksButton.classList.remove('bg-orange-500');
+            // showAllTasksButton.classList.remove('bg-orange-700', 'scale-105');
+            // showDoneTasksButton.classList.remove('bg-orange-700', 'scale-105');
+            // showPendingTasksButton.classList.add('bg-orange-700', 'scale-105');
+        })
+
+        newTaskDueDate.min = today;
+        newTaskDueDate.value = today;
+
+        function fetchTasks(tasks) {
+            taskListDisplayTable.innerHTML = '<tr><th></th><th>Title</th><th>Status</th><th>Due-Date</th><th class="text-center">Actions</th></tr>';
+            noTaskDisplayText.classList.remove('hidden');
+
+            if (tasks.length === 0) {
+                hideFlex(taskSearchDiv);
+                if (showDistributionButtons !== true) {
+                    hideFlex(taskDistributionDiv);
+                }
+                return;
+            }
+            showDistributionButtons = null;
+            noTaskDisplayText.classList.add('hidden');
+            showFlex(taskSearchDiv);
+            showFlex(taskDistributionDiv);
+
+            tasks.forEach(task => {
+                const newTaskTableRow = document.createElement('tr');
+                newTaskTableRow.classList.add('transition-all', 'duration-300', 'ease-in-out', 'hover:scale-[1.01]');
+                newTaskTableRow.id = `Row${task.id}`;
+                taskListDisplayTable.appendChild(newTaskTableRow);
+
+                const checkboxTableData = document.createElement('td');
+                const taskCompleteCheckbox = document.createElement('input');
+                taskCompleteCheckbox.type = 'checkbox';
+                taskCompleteCheckbox.id = `Checkbox${task.id}`;
+
+                const labelTableData = document.createElement('td');
+                const taskDisplayingLabel = document.createElement('label');
+                taskDisplayingLabel.textContent = task.text;
+                taskDisplayingLabel.setAttribute('for', `Checkbox${task.id}`);
+                taskDisplayingLabel.classList.add('p-2', 'text-xl', 'cursor-pointer');
+
+                if (task.complete) {
+                    newTaskTableRow.classList.add('bg-green-500');
+                    taskDisplayingLabel.classList.add('line-through');
+                    taskCompleteCheckbox.checked = true;
+                } else {
+                    newTaskTableRow.classList.remove('bg-green-500');
+                    taskDisplayingLabel.classList.remove('line-through');
+                    taskCompleteCheckbox.checked = false;
+                }
+
+                const dueStatusTableData = document.createElement('td');
+                dueStatusTableData.classList.add('text-lg');
+                const taskDate = new Date(task.date).setHours(0, 0, 0, 0);
+                const today = new Date().setHours(0, 0, 0, 0);
+
+                if (task.complete) {
+                    dueStatusTableData.textContent = 'Completed';
+                } else if (taskDate < today) {
+                    dueStatusTableData.textContent = 'Over-due';
+                } else if (taskDate == today) {
+                    dueStatusTableData.textContent = 'Due-today';
+                } else {
+                    dueStatusTableData.textContent = 'Pending';
+                }
+
+                taskCompleteCheckbox.addEventListener('change', function () {
+                    let taskToOperate = getTasks();
+                    taskToOperate = taskToOperate.map(temp => {
+                        if (temp.id === task.id) {
+                            return { ...temp, complete: taskCompleteCheckbox.checked };
+                        }
+                        return temp;
+                    });
+
+                    setTasks(taskToOperate);
+                    if (this.checked) {
+                        newTaskTableRow.classList.add('bg-green-500');
+                        taskDisplayingLabel.classList.add('line-through');
+                        dueStatusTableData.textContent = 'Completed';
+                    } else {
+                        newTaskTableRow.classList.remove('bg-green-500');
+                        taskDisplayingLabel.classList.remove('line-through');
+                        if (taskDate < today) {
+                            dueStatusTableData.textContent = 'Over-due';
+                        } else if (taskDate == today) {
+                            dueStatusTableData.textContent = 'Due-today';
+                        } else {
+                            dueStatusTableData.textContent = 'Pending';
+                        }
+                    }
+                })
+
+                const dueDateTableData = document.createElement('td');
+                const dueDateLabel = document.createElement('label');
+                dueDateLabel.textContent = task.date;
+                dueDateLabel.classList.add('p-2', 'text-lg');
+
+                const operationBtnsTableData = document.createElement('td');
+                operationBtnsTableData.classList.add('flex', 'flex-row', 'justify-evenly');
+                let deleteId = task.id;
+                operationBtnsTableData.innerHTML = `<button onclick="editTaskFunction(${deleteId})" type="button"><i class="fa-solid fa-pen"></i></button><button type="button" onclick="deleteTaskFunction(${deleteId})"><i class="fa-solid fa-trash-alt"></i></button>`;
+
+                dueDateTableData.appendChild(dueDateLabel);
+                checkboxTableData.appendChild(taskCompleteCheckbox);
+                labelTableData.appendChild(taskDisplayingLabel);
+
+                newTaskTableRow.appendChild(checkboxTableData);
+                newTaskTableRow.appendChild(labelTableData);
+                newTaskTableRow.appendChild(dueStatusTableData);
+                newTaskTableRow.appendChild(dueDateTableData);
+                newTaskTableRow.appendChild(operationBtnsTableData);
+
+                if (tasks.length !== 0) {
+                    noTaskDisplayText.classList.add('hidden');
+                    showFlex(taskSearchDiv);
+                    showFlex(taskDistributionDiv);
+                }
+            })
+        }
+
+        let editTaskId = null;
+        function editTaskFunction(editId) {
+            console.log("editFuncCalled");
+            const tasks = getTasks();
+            const task = tasks.find(t => t.id === editId);
+
+            console.log(`editFuncCalled ${task}`);
+            newTask.value = task.text;
+            newTaskDueDate.value = task.date;
+            taskSubmitButton.textContent = 'Update';
+            editTaskId = editId;
+            console.log(`editFuncCalled ${editTaskId}`);
+            taskModal.classList.replace('hidden', 'flex');
+        }
+
+        function deleteTaskFunction(deleteId) {
+            let consentToDelete = confirm('Do you want to delete this task?');
+            if (consentToDelete) {
+                removeTask(deleteId);
+            }
+        }
+
+        function showAllTasks() {
+            const allTasks = document.querySelectorAll('tr');
+            allTasks.forEach((task) => {
+                task.classList.remove('hidden');
+            })
+        }
+
+        newTask.addEventListener('input', function () {
+            const submitbtn = document.getElementById('taskSubmitButton');
+            const newTaskValue = newTask.value;
+            if (newTaskValue.length > 25) {
+                const inputErrorMsgDisplay = document.getElementById('inputErrorMsgDisplay');
+                inputErrorMsgDisplay.textContent = '* Character Limit is 25';
+                newTask.classList.add('border-b-red-600', 'border-b-2', 'border-solid');
+                newTask.classList.remove('border-none');
+                submitbtn.setAttribute('disabled', '');
+            }
+            else {
+                inputErrorMsgDisplay.textContent = '';
+                submitbtn.removeAttribute('disabled');
+                newTask.classList.add('border-none');
+                newTask.classList.remove('border-b-red-600', 'border-b-2', 'border-solid');
+            }
+        });
+
+        toDoListsForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            newTaskId = Date.now();
+
+            const newTaskText = newTask.value.trim();
+
+            if (newTaskText === '' || !newTaskText) {
+                const inputErrorMsgDisplay = document.getElementById('inputErrorMsgDisplay');
+                inputErrorMsgDisplay.textContent = '* Please input some text about task';
+                newTask.classList.remove('border-none');
+                newTask.classList.add('border-red-600', 'border', 'border-solid');
+                return;
+            }
+
+            const taskModal = document.getElementById('taskModal');
+            taskModal.classList.replace('flex', 'hidden');
+            let tasks = getTasks();
+            console.log(tasks);
+            console.log(typeof (tasks));
+
+            if (taskSubmitButton.textContent == 'Add') {
+                tasks.push({
+                    id: Date.now(),
+                    date: newTaskDueDate.value,
+                    text: newTaskText,
+                    complete: false
+                });
+                console.log(`editFuncCalled from if condition`);
+            } else {
+                tasks = tasks.map(task => task.id === editTaskId ?
+                    { ...task, text: newTaskText, date: newTaskDueDate.value } : task
+                )
+                editTaskId = null;
+                taskSubmitButton.textContent = 'Add';
+                console.log(`editFuncCalled from else condition`);
+            }
+
+            newTaskDueDate.value = today;
+            tasks.sort((a, b) => new Date(a.date) - new Date(b.date));
+            setTasks(tasks);
+            newTask.value = '';
+            searchTask.value = '';
+            showAllTasksButton.classList.add('bg-orange-700', 'scale-105');
+            showDoneTasksButton.classList.remove('bg-orange-700', 'scale-105');
+            showPendingTasksButton.classList.remove('bg-orange-700', 'scale-105');
+            fetchTasks(tasks);
+        });
+        searchTask.addEventListener('input', () => {
+            const searchTaskValue = searchTask.value.trim();
+            if (searchTaskValue.length === 0) {
+                showAllTasks();
+            } else {
+                searchTasks();
+            }
+        })
+
+        function searchTasks() {
+            const searchedTasks = document.querySelectorAll('tr');
+            const task = searchTask.value.toLowerCase();
+            let totalMatchingTask = 0;
+            searchedTasks.forEach((value) => {
+                let text = value.innerText.toLowerCase();
+                if (text.includes(task)) {
+                    value.classList.remove('hidden');
+                    totalMatchingTask++;
+                }
+                else {
+                    value.classList.add('hidden');
+                }
+            });
+            if (totalMatchingTask === 0) {
+                noTaskDisplayText.classList.remove('hidden');
+            } else {
+                noTaskDisplayText.classList.add('hidden');
+            }
+        }
+
+        function removeTask(taskId) {
+            console.log(taskId);
+            let tasks = getTasks().filter(t => t.id !== taskId);
+            //idea to create a whole new array that does not include element with one specific id
+
+            setTasks(tasks);
+
+            const taskToRemove = document.getElementById(`Row${taskId}`);
+            document.getElementById('taskListDisplayTable').removeChild(taskToRemove);
+
+            if (tasks.length === 0) {
+                const noTaskDisplayText = document.getElementById('noTaskDisplayText');
+                noTaskDisplayText.classList.remove('hidden');
+
+                hideFlex(taskSearchDiv);
+                hideFlex(taskDistributionDiv);
+            }
+        }
+
+        let pageTaskSetter = getTasks();
+        fetchTasks(pageTaskSetter);
+
+    </script>
+
+</body>
+
+</html>

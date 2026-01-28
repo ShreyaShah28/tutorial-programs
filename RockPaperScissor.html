@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Rock Paper Scissors</title>
+</head>
+
+<body class="font-sans font-bold m-0 flex flex-col items-center">
+    <p class="text-6xl text-gray-800">Rock - Paper - Scissors</p>
+    <div class="mb-8" id="choices">
+        <button onclick="playGame('rock')" class="text-9xl min-w-40 mx-3 my-0 rounded-full bg-sky-500 cursor-pointer transition-colors hover:bg-sky-400">✊</button>
+        <button onclick="playGame('paper')" class="text-9xl min-w-40 mx-3 my-0 rounded-full bg-sky-500 cursor-pointer transition-colors hover:bg-sky-400">🤚</button>
+        <button onclick="playGame('scissors')" class="text-9xl min-w-40 mx-3 my-0 rounded-full bg-sky-500 cursor-pointer transition-colors hover:bg-sky-400">✌️</button>
+    </div>
+
+    <div id="playerDisplay" class="text-5xl">Player:</div>
+    <div id="computerDisplay" class="text-5xl">Computer:</div>
+    <div id="resultDisplay" class="text-8xl my-3">It's a tie.</div>
+
+    <div class="text-4xl">Player's Score:
+        <span id="playerScore" class="text-green-500">0</span>
+    </div>
+    <div class="text-4xl">Computer's Score:
+        <span id="computerScore" class="text-red-500">0</span>
+    </div>
+</body>
+
+</html>
+<script>
+    const choices=['rock','paper','scissors'];
+    const playerDisplay=document.getElementById('playerDisplay');
+    const computerDisplay= document.getElementById('computerDisplay');
+    const resultDisplay=document.getElementById('resultDisplay');
+    const playerScoreDisplay=document.getElementById("playerScore");
+    const computerScoreDisplay=document.getElementById("computerScore");
+    let playerScore=0;
+    let computerScore=0;
+
+
+    function playGame(playerChoice){
+        const computerChoice= choices[Math.floor(Math.random()*3)];
+
+        let result='';
+        if(computerChoice===playerChoice){
+            result="IT'S A TIE!"
+        }
+        else{
+            switch(playerChoice){
+                case 'rock':
+                    result = (computerChoice==='scissors')?'YOU WIN!':'YOU LOSE!';
+                    break;
+                case 'paper':
+                    result = (computerChoice==='rock')?'YOU WIN!':'YOU LOSE!';
+                    break;
+                case 'scissors':
+                    result = (computerChoice==='scissors')?'YOU WIN!':'YOU LOSE!';
+                    break;
+            }
+        }
+        playerDisplay.textContent=`Player : ${playerChoice}`;
+        computerDisplay.textContent=`Computer : ${computerChoice}`;
+        resultDisplay.textContent=result;
+
+        resultDisplay.style.color="black";
+        if(result==='YOU WIN!'){
+            resultDisplay.style.color="green";
+            playerScore++;
+            playerScoreDisplay.textContent=playerScore;
+        }
+        else if(result==='YOU LOSE!'){
+            resultDisplay.style.color="red";
+            computerScore++;
+            computerScoreDisplay.textContent=computerScore;
+        }
+    }
+</script>

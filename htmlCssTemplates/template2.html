@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Packs</title>
+</head>
+
+<body>
+    <nav>
+        <p class="company-name">Company name</p>
+        <ul class="header-div" >
+            <li class="nav">Features</li>
+            <li class="nav">Enterprise</li>
+            <li class="nav">Support</li>
+            <li class="nav">Pricing</li>
+            <li><button class="sign-up-btn nav">Sign up</button></li>
+        </ul>
+    </nav>
+    <!-- <header>
+        <p class="company-name">Company name</p>
+        <div class="header-div">
+            <p class="nav">Features</p>
+            <p class="nav">Enterprise</p>
+            <p class="nav">Support</p>
+            <p class="nav">Pricing</p>
+            <button class="sign-up-btn nav">Sign
+                up</button>
+        </div>
+    </header> -->
+
+    <section style="align-content: center;">
+        <div class="pricing-div">
+            <div class="pricing-sub-div">
+                <p class="pricing-tag">Pricing</p>
+                <p class="price-desc">Quickly build an effective pricing table for your potential customers
+                    with this Bootstrap example. It's built with default Bootstrap components and utilities with little
+                    customization.</p>
+            </div>
+        </div>
+
+        <div class="templates-div">
+            <div class="sub-template-div">
+                <div class="templates">
+                    <span class="subscription-type">Free</span>
+                    <div class="price-tag-div">
+                        <p class="price-tag">$0 </>
+                        <p class="time-unit">&nbsp; / mo</>
+                    </div>
+                    <p class="plan-detail">
+                        10 users included<br>
+                        2 GB of storage<br>
+                        Email support<br>
+                        Help center access</p>
+                    <button class="btn-action-text white-btn">Signup for free</button>
+                </div>
+                <div class="templates">
+                    <span class="subscription-type">Pro</span>
+                    <div class="price-tag-div">
+                        <p class="price-tag">$15</p>
+                        <p class="time-unit">&nbsp; / mo</p>
+                    </div>
+                    <p class="plan-detail">
+                        20 users included<br>
+                        10 GB of storage<br>
+                        Priority email support<br>
+                        Help center access</p>
+                    <button class="btn-action-text blue-btn">Get started</button>
+                </div>
+                <div class="templates">
+                    <span class="subscription-type">Enterprise</span>
+                    <div class="price-tag-div">
+                        <p class="price-tag">$29</p>
+                        <p class="time-unit">&nbsp; / mo</p>
+                    </div>
+                    <p class="plan-detail">
+                        30 users included<br>
+                        15 GB of storage<br>
+                        Phone and email support<br>
+                        Help center access
+                    </p>
+                    <button class="btn-action-text blue-btn">Contact us</button>
+                </div>
+            </div>
+        </div>
+        <div class="company-detail-div">
+            <div class="sub-detail-div">
+                <div class="detail-div" style="padding-top: 20px;">
+                    <img src="./images/bootstrap-solid.svg" height=25px width="25px">
+                    <p class="copy-year">&copy;2017-2018</p>
+                </div>
+                <div class="detail-div">
+                    <p class="detail-topic-text">Features</p>
+                    <p class="detail-topic-sub-text">Cool stuff</p>
+                    <p class="detail-topic-sub-text">Random feature</p>
+                    <p class="detail-topic-sub-text">Team feature</p>
+                    <p class="detail-topic-sub-text">Stuff for developers</p>
+                    <p class="detail-topic-sub-text">Another one</p>
+                    <p class="detail-topic-sub-text">Last time</p>
+                </div>
+                <div class="detail-div">
+                    <p class="detail-topic-text">Resources</p>
+                    <p class="detail-topic-sub-text">Resource</p>
+                    <p class="detail-topic-sub-text">Resource name</p>
+                    <p class="detail-topic-sub-text">Another resource</p>
+                    <p class="detail-topic-sub-text">Final resource</p>
+                </div>
+                <div class="detail-div">
+                    <p class="detail-topic-text">About</p>
+                    <p class="detail-topic-sub-text">Team</p>
+                    <p class="detail-topic-sub-text">Locations</p>
+                    <p class="detail-topic-sub-text">Privacy</p>
+                    <p class="detail-topic-sub-text">Terms</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>
+<style>
+    * {
+        font-family: sans-serif;
+        font-weight: 300;
+    }
+
+    ul{
+        list-style-type:none;
+    }
+    body {
+        margin: 0px;
+    }
+
+    .company-name {
+        font-weight: 500;
+        font-size: larger;
+        color: rgb(68, 67, 67);
+        padding: 10px;
+    }
+
+    .nav {
+        font-size: medium;
+        font-weight: 400;
+        color: rgb(68, 67, 67);
+        margin: 10px
+    }
+
+    .sign-up-btn {
+        color: dodgerblue;
+        background-color: white;
+        border-color: dodgerblue;
+        padding: 8px 15px;
+        height: min-content;
+        margin-right: 8px;
+    }
+
+    nav {
+        display: flex;
+        justify-content: space-between;
+        box-shadow: 0px 10px 10px -15px #111;
+        height: 70px;
+        align-items: center;
+    }
+
+    .header-div {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        align-items: center;
+    }
+
+    .pricing-tag {
+        font-size: 3.1em;
+        font-weight: 400;
+        text-align: center;
+        margin: 0px;
+    }
+
+    .price-desc {
+        font-size: 1.3em;
+        text-align: center;
+        margin: 20px;
+        line-height: 1.5;
+    }
+
+    button {
+        border: 1px solid dodgerblue;
+        border-radius: 5px;
+    }
+
+    .pricing-div {
+        display: flex;
+        align-content: center;
+        justify-content: center;
+    }
+
+    .pricing-sub-div {
+        width: 40%;
+        display: flex;
+        flex-direction: column;
+        margin-top: 60px;
+    }
+
+    .subscription-type {
+        width: 100%;
+        height: 20%;
+        text-align: center;
+        padding: 15px;
+        box-sizing: border-box;
+        background-color: whitesmoke;
+        font-weight: 500;
+        font-size: 1.3em;
+        box-shadow: 0px 1px 2px 0px rgba(135, 128, 128, 0.48);
+    }
+
+    .price-tag {
+        font-size: 2.5em;
+        font-weight: 500;
+        margin: 0px;
+    }
+
+    .price-tag-div {
+        align-items: baseline;
+    }
+
+    .time-unit {
+        color: rgb(83, 82, 82);
+        font-size: 1.8em;
+        font-weight: 400;
+        margin: 0px;
+    }
+
+    .plan-detail {
+        margin: 0px;
+        text-align: center;
+        line-height: 1.5;
+        font-weight: 400;
+        padding: 5px;
+    }
+
+    .white-btn {
+        color: dodgerblue;
+        background-color: white;
+    }
+
+    .blue-btn {
+        background-color: rgba(25, 116, 234, 0.899);
+        color: white;
+    }
+
+    .btn-action-text {
+        width: 85%;
+        font-size: 1.2em;
+        font-weight: 400;
+        letter-spacing: 1.3;
+        margin-bottom: 20px;
+        padding: 10px;
+    }
+
+    .templates-div {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .sub-template-div {
+        width: 50%;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        padding-bottom: 50px;
+        box-shadow: 0px 3px 3px -4px rgb(17, 17, 17);
+    }
+
+    .templates {
+        width: 30%;
+        gap: 15px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border: 0.2px solid #ccc7c7;
+        margin: 20px;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+    .templates div {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .company-detail-div {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        margin: 40px;
+    }
+
+    .detail-topic-text {
+        font-size: 1.2em;
+        font-weight: 500;
+    }
+
+    .detail-topic-sub-text {
+        color: rgba(48, 49, 50, 0.744);
+        font-weight: 400;
+        line-height: 0.5;
+    }
+
+    .copy-year {
+        color: rgba(24, 25, 25, 0.744);
+        font-size: 0.8em;
+        margin: 3px;
+    }
+
+    .sub-detail-div {
+        display: flex;
+        flex-direction: row;
+        width: 50%;
+        justify-content: flex-start;
+    }
+
+    .detail-div {
+        margin-right: 13%;
+    }
+
+    @media(max-width:520px) {
+        nav {
+            display: flex;
+            flex-direction: column;
+            height: 210px;
+            align-items: flex-start;
+
+        }
+
+        .nav-div {
+            margin-bottom: 20px;
+        }
+
+        .sub-template-div {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-content: center;
+        }
+
+        .templates {
+            width: 90%;
+            align-self: center;
+        }
+
+        .sub-detail-div {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .detail-div {
+            margin: 0px;
+        }
+
+        .pricing-sub-div {
+            width: 100%;
+        }
+    }
+
+    @media(min-width:520px) {
+        header {
+            display: flex;
+            flex-direction: column;
+            height: 140px;
+            align-items: flex-start;
+        }
+
+        .sub-template-div {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-content: center;
+        }
+
+        .templates {
+            width: 50%;
+            align-self: center;
+        }
+
+        .sub-detail-div {
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .detail-div {
+            margin: 0px;
+        }
+
+        .pricing-sub-div {
+            width: 90%;
+        }
+    }
+
+    @media(min-width:720px) {
+        header {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            height: 70px;
+            align-items: center;
+        }
+
+        .sub-template-div {
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            padding-bottom: 50px;
+            box-shadow: 0px 3px 3px -4px rgb(17, 17, 17);
+        }
+
+        .sub-detail-div {
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .detail-div {
+            margin: 0px;
+        }
+
+        .pricing-sub-div {
+            width: 90%;
+        }
+    }
+
+    @media(min-width:930px) {
+
+        .sub-template-div,
+        .sub-detail-div {
+            width: 100%;
+        }
+
+        .pricing-sub-div {
+            width: 80%;
+        }
+
+        .detail-div {
+            margin-right: 13%;
+        }
+    }
+
+    @media(min-width:1200px) {
+
+        .sub-template-div,
+        .sub-detail-div {
+            width: 80%;
+        }
+
+        .pricing-sub-div {
+            width: 70%;
+        }
+    }
+
+    @media(min-width:1300px) {
+
+        .sub-template-div,
+        .sub-detail-div {
+            width: 70%;
+        }
+    }
+
+    @media(min-width:1440px) {
+
+        .sub-template-div,
+        .sub-detail-div,
+        .pricing-sub-div {
+            width: 60%;
+        }
+    }
+
+    @media(min-width:1600px) {
+        .pricing-sub-div {
+            width: 40%;
+        }
+
+        .sub-template-div {
+            width: 50%;
+        }
+
+        .sub-detail-div {
+            width: 50%;
+        }
+    }
+</style>

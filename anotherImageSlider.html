@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Natural Scenario Backgrounds</title>
+</head>
+
+<body class="bg-green-200 text-green-800 w-100vw overflow-hidden">
+    <header>
+        <p class="text-green-800 text-5xl lg:text-8xl md:text-7xl sm:6xl font-serif text-center">Natural Scenarios Slideshow</p>
+    </header>
+    <div id="loadingSpinnerDiv" class="hidden flex-col h-screen items-center justify-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-4 border-solid border-green-400 border-t-transparent"
+            role="status" aria-label="loading">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <p>Loading</p>
+    </div>
+    <div id="slideShowParentDiv" class="h-screen w-screen flex justify-center items-center">
+        <div id="slideDisplayDiv"
+            class="flex flex-row justify-between items-center w-[100%] lg:h-[65%] lg:w-[65%] md:h-[70%] md:w-[70%] sm:h-[80%] sm:w-[80%]">
+            <button onclick="previousSliderImage()" type="button" class="p-2 text-5xl lg:text-9xl md:text-7xl sm:text-5xl text-green-500">&#10094</button>
+            <div class="flex flex-col justify-center h-full">
+                <img src="" alt="" id="imageDisplayElement" onload="hideLoadingFunction()" class="h-full w-auto shadow-2xl shadow-green-950 transition-shadow" loading="lazy">
+                <p id="imageDisplayedOwner" class="text-center font-bold font-serif p-2" loading="lazy"></p>
+            </div>
+            <button onclick="nextSliderImage()" type="button" class="p-2 text-5xl lg:text-9xl md:text-7xl sm:text-5xl text-green-500">&#10095</button>
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+    const imageDisplayElement = document.getElementById('imageDisplayElement');
+    const imageDisplayedOwner = document.getElementById('imageDisplayedOwner');
+    const loadingSpinnerDiv = document.getElementById('loadingSpinnerDiv');
+    const slideShowParentDiv = document.getElementById('slideShowParentDiv');
+    const sliderImages = [
+        "https://images.unsplash.com/photo-1615412704911-55d589229864?w=auto&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bmF0dXJlJTIwYmFja2dyb3VuZHxlbnwwfHwwfHx8MA%3D%3D",
+        "https://images.unsplash.com/photo-1610147323479-a7fb11ffd5dd?w=auto&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bmF0dXJlJTIwYmFja2dyb3VuZHxlbnwwfHwwfHx8MA%3D%3D",
+        "https://images.unsplash.com/photo-1586521995568-39abaa0c2311?w=auto&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8bmF0dXJlJTIwYmFja2dyb3VuZHxlbnwwfHwwfHx8MA%3D%3D",
+        "https://images.unsplash.com/photo-1686579809662-829e8374d0a8?w=auto&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8bmF0dXJlJTIwYmFja2dyb3VuZHxlbnwwfHwwfHx8MA%3D%3D",
+        "https://images.unsplash.com/photo-1611918126831-0a8352d6196f?w=auto&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fG5hdHVyZSUyMGJhY2tncm91bmR8ZW58MHx8MHx8fDA%3D",
+        "https://images.unsplash.com/photo-1692356573087-00b545ac4694?w=auto&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8bmF0dXJlJTIwYmFja2dyb3VuZHxlbnwwfHwwfHx8MA%3D%3D"
+    ];
+    const sliderImageOwner = [
+        `Photo by <a href="https://unsplash.com/@jeremygbrady?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Jeremy Brady</a> on <a href="https://unsplash.com/photos/green-mountains-and-green-trees-beside-river-under-blue-sky-during-daytime-vK26p2SFX3E?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>`,
+        `Photo by <a href="https://unsplash.com/@acquireapp?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">max pruvost</a> on <a href="https://unsplash.com/photos/green-trees-on-green-grass-field-under-blue-sky-and-white-clouds-during-daytime-OJ02cQHePds?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>`,
+        `Photo by <a href="https://unsplash.com/@jplenio?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Johannes Plenio</a> on <a href="https://unsplash.com/photos/green-trees-near-body-of-water-during-daytime-bhCdwWNmXw8?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>`,
+        `Photo by <a href="https://unsplash.com/@liviaphotographs?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Livia</a> on <a href="https://unsplash.com/photos/a-small-lake-surrounded-by-green-hills-and-yellow-flowers-rpryWTMTcSc?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>`,
+        `Photo by <a href="https://unsplash.com/@paulinehe?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Pauline Heidmets</a> on <a href="https://unsplash.com/photos/gray-wooden-pathway-between-green-grass-field-during-sunset-GTL39WM6QqA?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>`,
+        `Photo by <a href="https://unsplash.com/@esaiastann?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Esaias Tan</a> on <a href="https://unsplash.com/photos/a-large-body-of-water-surrounded-by-mountains-WmpCzw4QXLA?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>`
+    ];
+    let pictureIndex = 0;
+    let sliderInterval = setInterval(nextSliderImage, 10000);
+
+    slideDisplayDiv.addEventListener("mouseenter", () => clearInterval(sliderInterval));
+    slideDisplayDiv.addEventListener("mouseleave", () => {
+        sliderInterval = setInterval(nextSliderImage, 10000);
+    });
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowLeft') {
+            previousSliderImage();
+        }
+        if (event.key === 'ArrowRight') {
+            nextSliderImage();
+        }
+    });
+    setImageFunction();
+    function showLoadingFunction(){
+        loadingSpinnerDiv.classList.replace('hidden','flex');
+        slideShowParentDiv.classList.replace('flex','hidden');
+    }
+    function hideLoadingFunction(){
+        console.log("fromhideLoadFunction")
+        loadingSpinnerDiv.classList.replace('flex','hidden');
+        slideShowParentDiv.classList.replace('hidden','flex');
+    }
+    function previousSliderImage() {
+        showLoadingFunction();
+        pictureIndex = (pictureIndex - 1 + sliderImages.length) % sliderImages.length;
+        setImageFunction();
+    }
+    function nextSliderImage() {
+        showLoadingFunction();
+        pictureIndex = (pictureIndex + 1) % sliderImages.length;
+        setImageFunction();
+    }
+    function setImageFunction() {
+        imageDisplayElement.setAttribute('src', `${sliderImages[pictureIndex]}`);
+        imageDisplayedOwner.innerHTML = sliderImageOwner[pictureIndex];
+    }
+</script>

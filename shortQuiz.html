@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Vue.js Quiz</title>
+</head>
+
+<body class="bg-gradient-to-r min-h-screen px-4 flex justify-center from-violet-300 from-20% via-purple-500 via-60% to-blue-700 to-100%
+    font-sans font-extralight">
+    <div id="quizMainTemplate"
+        class="flex flex-col justify-center w-full max-w-md sm:max-w-lg md:max-w-2xl mt-10 bg-white h-4/5 rounded-xl shadow-xl overflow-hidden">
+        <div id="quizTitleDiv" class=" w-full px-6 py-8 sm:py-10 flex flex-col items-center justify-center 
+                    bg-gradient-to-r from-yellow-100 from-10% via-pink-100 via-30% to-sky-200 to-100%">
+            <p class="p-4 sm:text-3xl md:text-4xl font-bold text-center">Vue.js Quiz</p>
+            <div class="h-4 w-40 rounded-full overflow-hidden">
+                <progress id="quizProgressBar" value="" max="100" class="h-20 bg-green-400"></progress>
+            </div>
+            <p class="p-4" id="quizProgressText">0% Complete</p>
+        </div>
+        <div id="quizQuestionsDiv" class="bg-white px-4 sm:px-6 py-6 gap-3 flex flex-col">
+            <p id="questionElement" class="h-20 min-w-full text-lg sm:text-xl md:text-2xl text-center min-h-[4rem]"></p>
+            <button id="optionOneButton" onclick="buttonOneFunction()"
+                class="text-base sm:text-lg px-5 py-3 rounded-full bg-slate-200 h-auto hover:bg-slate-300 transition m-2 flex items-center"></button>
+            <button id="optionTwoButton" onclick="buttonTwoFunction()"
+                class="text-base sm:text-lg px-5 py-3 rounded-full bg-slate-200 h-auto hover:bg-slate-300 transition m-2 flex items-center"></button>
+            <button id="optionThreeButton" onclick="buttonThreeFunction()"
+                class="text-base sm:text-lg px-5 py-3 rounded-full bg-slate-200 h-auto hover:bg-slate-300 transition m-2 flex items-center"></button>
+            <button id="optionFourButton" onclick="buttonFourFunction()"
+                class="text-base sm:text-lg px-5 py-3 rounded-full bg-slate-200 h-auto hover:bg-slate-300 transition m-2 flex items-center"></button>
+        </div>
+        <div id="backSkipButtons" class="h-20 p-4 flex flex-row justify-between 
+                bg-gradient-to-r from-sky-50 from-0% to-sky-100 to-100%">
+            <button id="previousQuestionButton" type="button" class="border rounded-full border-gray-300 px-6 py-1"
+                onclick="loadPreviousQuestion()">⏮️ Back</button>
+            <button id="nextQuestionButton" type="button" class="border rounded-full border-gray-300 px-6 py-1"
+                onclick="loadNextQuestion()">Skip ⏭️</button>
+        </div>
+    </div>
+    <div id="viewScoreCardDiv" class="hidden justify-center items-center font-sans text-white max-h-screen">
+        <div id="quizResultTemplate"
+            class="flex flex-col justify-center items-center w-96 rounded-3xl m-[10%] bg-gradient-to-b from-violet-600 from-20% to-blue-600 to-100% h-[500px]">
+            <p class="p-1 text-lg font-light">Your Result</p>
+            <div class="rounded-full h-44 w-44 bg-indigo-600 flex flex-col justify-center content-center p-8 m-5">
+                <p id="obtainedScore" class="text-6xl text-center p-1"></p>
+                <p class="text-center p-1">of 10</p>
+            </div>
+            <p id="complimentText" class="p-4 text-3xl text-center"></p>
+            <p id="longComplimentText" class="p-4 text-center"></p>
+            <button type="button"
+                onclick="reviewAnswersFunction()"
+                class="text-lg rounded-full bg-indigo-400 h-10 p-4 m-2 flex justify-start items-center">
+                Review Question Answers
+            </button>
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+    const questionAnswerArray = [
+        {
+            question: `Texts that are enclosed on a &#60;title&#62; tag are all displayed in which part of the browser?`,
+            options: [
+
+                'Tab',
+                'Title Bar',
+                'Menu Bar',
+                'Tool Bar'
+
+            ], answer: 'Title Bar'
+        },
+        {
+            question: 'Tags that can stand alone are called…',
+            options: [
+                'Empty Tag',
+                'Markup Tag',
+                'Container Tag',
+                'Standalone Tag'
+            ], answer: 'Empty Tag'
+        },
+        {
+            question: 'Which tag is used to create body text in HTML?',
+            options: [
+                'HEAD',
+                'BODY',
+                'TITLE',
+                'TEXT'
+            ], answer: 'BODY'
+        },
+        {
+            question: 'Outlook Express is _________',
+            options: [
+                'E-Mail Client',
+                'Browser',
+                'Search Engine',
+                'None of the above'
+            ], answer: 'E-Mail Client'
+        },
+        {
+            question: 'What is a search engine?',
+            options: [
+                'A hardware component ',
+                'A machinery engine that search data',
+                'A web site that searches anything',
+                'A program that searches engines'
+            ], answer: 'A web site that searches anything'
+        },
+        {
+            question: 'What does the .com domain represents?',
+            options: [
+                'Network',
+                'Education',
+                'Commercial',
+                'None of the above'
+            ], answer: 'Commercial'
+        },
+        {
+            question: 'In Satellite based communication, VSAT stands for?',
+            options: [
+                'Very Small Aperture Terminal',
+                'Varying Size Aperture Terminal',
+                'Very Small Analog Terminal',
+                'None of the above'
+            ], answer: 'Very Small Aperture Terminal'
+        },
+        {
+            question: 'What is the full form of TCP/IP?',
+            options: [
+                'Telephone call protocol / international protocol',
+                'Transmission control protocol / internet protocol',
+                'Transport control protocol / internet protocol',
+                'None of the above'
+            ], answer: 'Transmission control protocol / internet protocol'
+        },
+        {
+            question: 'What is the full form of HTML?',
+            options: [
+                'Hyper text marking language',
+                'Hyphenation text markup language',
+                'Hyper text markup language',
+                'Hyphenation test marking language'
+            ], answer: 'Hyper text markup language'
+        },
+        {
+            question: '\"Yahoo\", \"Infoseek\" and \"Lycos\" are _________?',
+            options: [
+                'Browsers',
+                'Search Engines',
+                'News Group',
+                'None of the above'
+            ], answer: 'Search Engines'
+        }
+    ];
+    const complimentsTextArray =
+        [
+            ['Don’t worry, keep trying!', 'Almost there! Practice makes perfect.'],
+            ['Try again and learn more!', 'You can do better 💪 Give it another shot!'],
+            ['Not bad!', 'Halfway there! Try again to boost your score 📈.'],
+            ['Great job!👏', 'Good work! A bit more practice and you’ll be unstoppable.'],
+            ['Excellent!🎉', 'You’re a quiz master! Keep it up 💪']
+        ];
+    let chosenOptionArray = [];
+    let currentQuestionIndex = 0;
+
+    const quizMainTemplate = document.getElementById('quizMainTemplate');
+    const viewScoreCardDiv = document.getElementById('viewScoreCardDiv');
+    const questionElement = document.getElementById('questionElement');
+    const optionOneButton = document.getElementById('optionOneButton');
+    const optionTwoButton = document.getElementById('optionTwoButton');
+    const optionThreeButton = document.getElementById('optionThreeButton');
+    const optionFourButton = document.getElementById('optionFourButton');
+    const previousQuestionButton = document.getElementById('previousQuestionButton');
+    const nextQuestionButton = document.getElementById('nextQuestionButton');
+    const quizProgressBar = document.getElementById('quizProgressBar');
+    const quizProgressText = document.getElementById('quizProgressText');
+    const obtainedScore = document.getElementById('obtainedScore');
+    const complimentText = document.getElementById('complimentText');
+    const longComplimentText = document.getElementById('longComplimentText');
+
+    displayCurrentQuestion(currentQuestionIndex);
+
+    function displayCurrentQuestion(currentQuestionIndex) {
+        if (currentQuestionIndex == 0) { previousQuestionButton.disabled = true }
+        else { previousQuestionButton.disabled = false }
+        if (currentQuestionIndex == 9) {
+            nextQuestionButton.innerHTML = 'Submit Answers'
+        }
+        else {
+            nextQuestionButton.innerHTML = 'Skip ⏭️'
+        }
+        let progressPercentage = (currentQuestionIndex * 10);
+        quizProgressBar.setAttribute('value', progressPercentage)
+        quizProgressText.innerHTML = `${progressPercentage}% Complete`;
+        questionElement.innerHTML = `Q${currentQuestionIndex + 1}. ${questionAnswerArray[currentQuestionIndex].question}`;
+        optionOneButton.innerHTML = `a. ${questionAnswerArray[currentQuestionIndex].options[0]}`;
+        optionOneButton.value = `${questionAnswerArray[currentQuestionIndex].options[0]}`;
+        optionTwoButton.innerHTML = `b. ${questionAnswerArray[currentQuestionIndex].options[1]}`;
+        optionTwoButton.value = `${questionAnswerArray[currentQuestionIndex].options[1]}`;
+        optionThreeButton.innerHTML = `c. ${questionAnswerArray[currentQuestionIndex].options[2]}`;
+        optionThreeButton.value = `${questionAnswerArray[currentQuestionIndex].options[2]}`;
+        optionFourButton.innerHTML = `d. ${questionAnswerArray[currentQuestionIndex].options[3]}`;
+        optionFourButton.value = `${questionAnswerArray[currentQuestionIndex].options[3]}`;
+    }
+    let totalScore = 0;
+    function displayResultPageFunction() {
+
+        for (let index = 0; index < questionAnswerArray.length; index++) {
+            totalScore += (chosenOptionArray[index] === questionAnswerArray[index].answer) ? 1 : 0;
+        }
+
+        let complimentIndex = Math.floor(totalScore / 2);
+        if (totalScore === 10) complimentIndex = 4;
+
+        console.log(totalScore);
+        document.body.className = "min-h-screen flex justify-center items-center bg-gradient-to-b from-pink-200 from-20% to-violet-300 to-100%";
+        obtainedScore.innerHTML = totalScore;
+        complimentText.innerHTML = complimentsTextArray[complimentIndex][0]
+        longComplimentText.innerHTML = complimentsTextArray[complimentIndex][1]
+        quizMainTemplate.classList.add('hidden');
+        viewScoreCardDiv.classList.remove('hidden');
+        viewScoreCardDiv.classList.add('flex');
+    }
+
+    function reviewAnswersFunction() {
+        console.log('from reviewAnswerFunction')
+        document.body.innerHTML = '';
+        document.body.className = "min-h-screen min-w-screen bg-gradient-to-b from-pink-200 from-20% to-violet-300 to-100% p-2 sm:p-5 md:p-10";
+        for (let index = 0; index < questionAnswerArray.length; index++) {
+            const questionDisplayDiv = document.createElement('div');
+            questionDisplayDiv.classList.add('bg-pink-100', 'm-3', 'rounded-2xl', 'p-10');
+            const questionText = document.createElement('p');
+            questionText.className = 'text-2xl';
+            questionText.innerHTML = `${index + 1}. ${questionAnswerArray[index].question}<br>`;
+            const correctAnswerText = document.createElement('p');
+            correctAnswerText.innerHTML = `Correct Answer: ${questionAnswerArray[index].answer} ✅<br>`;
+            const chosenAnswerText = document.createElement('p');
+
+
+            if (questionAnswerArray[index].answer === chosenOptionArray[index]) {
+                chosenAnswerText.innerHTML = `Your Answer: ${chosenOptionArray[index]} ✅`;
+            } else {
+                if (chosenOptionArray[index] == null) {
+                    chosenAnswerText.innerHTML = `You Skipped This Question`;
+                } else {
+                    chosenAnswerText.innerHTML = `Your Answer: ${chosenOptionArray[index]} ❌`;
+                }
+            }
+            questionDisplayDiv.appendChild(questionText);
+            questionDisplayDiv.appendChild(correctAnswerText);
+            questionDisplayDiv.appendChild(chosenAnswerText);
+            document.body.appendChild(questionDisplayDiv);
+        }
+    }
+
+    function loadPreviousQuestion() {
+        currentQuestionIndex--;
+        displayCurrentQuestion(currentQuestionIndex);
+    }
+
+    function loadNextQuestion() {
+        if (currentQuestionIndex === 9) {
+            displayResultPageFunction();
+            return;
+        }
+        currentQuestionIndex++
+        displayCurrentQuestion(currentQuestionIndex)
+    }
+
+    function buttonOneFunction() {
+        chosenOptionArray[currentQuestionIndex] = optionOneButton.value;
+        buttonActionFunction();
+    }
+    function buttonTwoFunction() {
+        chosenOptionArray[currentQuestionIndex] = optionTwoButton.value;
+        buttonActionFunction();
+    }
+    function buttonThreeFunction() {
+        chosenOptionArray[currentQuestionIndex] = optionThreeButton.value;
+        buttonActionFunction();
+    }
+    function buttonFourFunction() {
+        chosenOptionArray[currentQuestionIndex] = optionFourButton.value;
+        buttonActionFunction();
+    }
+    function buttonActionFunction(){
+        if (currentQuestionIndex === 9) {
+            displayResultPageFunction();
+            return;
+        }
+        currentQuestionIndex++;
+        displayCurrentQuestion(currentQuestionIndex)
+    }
+</script>

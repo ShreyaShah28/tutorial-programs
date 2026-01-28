@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Weather Api</title>
+</head>
+
+<body class="font-sans bg-slate-200 m-0 flex flex-col items-center">
+    <form action="" id="weatherForm" class="m-5">
+        <input type="text" placeholder="Enter Your City" id="cityInput"
+            class="p-3 text-4xl font-bold border-2 border-solid border-gray-900 rounded-xl m-3 w-72">
+        <button type="submit"
+            class="my-3 mx-5 p-4 font-bold text-4xl bg-green-600 text-white border-none rounded-xl cursor-pointer hover:bg-green-500">Get
+            Weather Forecast</button>
+    </form>
+
+    <div id="card"
+        class="bg-gradient-to-b from-sky-300 to-orange-300 p-12 shadow-md shadow-black min-w-72 flex-col items-center hidden">
+        <p id="cityDisplay" class="text-6xl font-bold mt-0 mb-6 text-gray-900">Bhavnagar</p>
+        <p id="tempDisplay" class="text-6xl font-bold mx-1 my-0 text-gray-900 mb-6">70°</p>
+        <p id="humidityDisplay" class="text-2xl font-bold mx-1 my-0 mb-6">Humidity: 75%</p>
+        <p id="descDisplay" class="text-3xl font-bold mx-1 my-0 italic">Clear Skies</p>
+        <p id="weatherEmoji" class="text-9xl m-0">☀️</p>
+    </div>
+    <div class="bg-gradient-to-b from-sky-300 to-orange-300 min-w-72 rounded-xl">
+        <p id="errorDisplay" class="text-4xl font-bold text-gray-900 mx-1 my-0 hidden p-5">Please enter a city</p>
+    </div>
+
+</body>
+
+</html>
+<script>
+    const weatherForm = document.getElementById("weatherForm");
+    const cityInput = document.getElementById("cityInput");
+    const card = document.getElementById("card");
+    const errorDisplay = document.getElementById("errorDisplay");
+
+    const cityDisplay = document.getElementById("cityDisplay");
+    const tempDisplay = document.getElementById("tempDisplay");
+    const humidityDisplay = document.getElementById("humidityDisplay");
+    const descDisplay = document.getElementById("descDisplay");
+    const weatherEmoji = document.getElementById("weatherEmoji");
+
+    const apiKey = "14653036671447089b594953261301";
+
+    weatherForm.addEventListener("submit", async event => {
+        event.preventDefault();
+
+        const city = cityInput.value;
+
+        if (city) {
+            try {
+                const weatherData = await getWeatherData(city);
+                console.log(weatherData);
+                displayWeatherInfo(weatherData);
+            }
+            catch (error) {
+                console.error(error);
+                displayError(error);
+            }
+        } else {
+            displayError("Please enter a city");
+        }
+    });
+
+    async function getWeatherData(city) {
+        const apiUrl = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`;
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        if (!response.ok||data.error) {
+            throw new Error(data.error?data.error.message:"Could not fetch weather data!");
+        }
+        return data;
+    }
+
+    function displayWeatherInfo(data) {
+        const {
+            location: { name },
+            current: {
+                temp_f,
+                humidity,
+                condition: { code, text }
+            }
+        } = data;
+
+        cityDisplay.textContent = name;
+        tempDisplay.textContent = `${temp_f}°F`;
+        humidityDisplay.textContent = `Humidity: ${humidity}`;
+        descDisplay.textContent = `${text}`;
+        weatherEmoji.textContent = getWeatherEmoji(code);
+
+        errorDisplay.classList.replace("flex", "hidden");
+        card.classList.replace("hidden", "flex");
+    }
+
+    function getWeatherEmoji(weatherId) {
+
+        const rainCodes = [1150, 1153, 1168, 1171, 1180, 1183, 1186, 1189,
+            1192, 1195, 1198, 1201, 1240, 1243, 1246, 1273, 1276
+        ];
+
+        const snowCodes = [
+            1066, 1069, 1114, 1117, 1204, 1207, 1210, 1213,
+            1216, 1219, 1222, 1225, 1237, 1249, 1252,
+            1255, 1258, 1261, 1264, 1279, 1282
+        ];
+
+        const cloudyCodes = [1003, 1006, 1009];
+        const sunnyCodes = [1000];
+
+        if (rainCodes.includes(weatherId)) { return "⛈️"; }
+        else if (snowCodes.includes(weatherId)) { return "❄️"; }
+        else if (cloudyCodes.includes(weatherId)) { return "🌥️"; }
+        else if (sunnyCodes.includes(weatherId)) { return "☀️"; }
+        else{return "❓";}
+    }
+    function displayError(message) {
+        errorDisplay.textContent = message;
+        errorDisplay.classList.replace("hidden", "flex");
+        card.classList.replace("flex", "hidden");
+    }
+
+</script>

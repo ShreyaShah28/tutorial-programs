@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Slider</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+    <div class="relative w-full m-auto overflow-hidden">
+        <div class="slides">
+            <img src="./images/Car1.png" alt="Car 1">
+            <img src="./images/Car2.jpg" alt="Car 2">
+            <img src="./images/Car3.avif" alt="Car 3">
+        </div>
+        <button class="absolute top-2/4 -translate-y-2/4 text-4xl bg-black text-white border-none cursor-pointer left-0" onclick="prevSlide()">&#10094</button>
+        <button class="absolute top-2/4 -translate-y-2/4 text-4xl bg-black text-white border-none cursor-pointer right-0" onclick="nextSlide()">&#10095</button>
+    </div>
+</body>
+
+</html>
+<script>
+    const slides = document.querySelectorAll('.slides img');
+    let slideIndex = 0;
+    let intervalId = null;
+    const defaultClass = "w-full hidden";
+    const specialClass = "w-full block animate-fade";
+
+    initializeSlider();
+    //document.addEventListener("DOMContentLoaded", initializeSlider)
+
+    function initializeSlider() {
+
+        if (slides.length > 0) {
+            slides.forEach((slide, index) => {
+                if (slideIndex === index) {
+                    slide.classList = specialClass;
+                }
+                else {
+                    slide.classList = defaultClass;
+                }
+
+            })
+        }
+    }
+    function showSlide(slideIndex1) {
+        slides.forEach((slide, index) => {
+            if (slideIndex1 === index) {
+                slide.classList = specialClass;
+            }
+            else {
+                slide.classList = defaultClass;
+            }
+        })
+    }
+    function prevSlide() {
+        slideIndex--;
+        if (slideIndex < 0) {
+            slideIndex = slides.length - 1;
+        }
+        showSlide(slideIndex);
+    }
+    function nextSlide() {
+        slideIndex++;
+        console.log(slides.length);
+        if (slideIndex >= slides.length) {
+            slideIndex = 0;
+        }
+        showSlide(slideIndex);
+    }
+
+</script>
