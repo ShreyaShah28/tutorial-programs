@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Simple Calculator</title>
+</head>
+
+<body class="bg-slate-300 flex justify-center content-center font-sans">
+    <div class="bg-gray-800 max-w-fit rounded-2xl m-10 overflow-hidden" id="calculatorDiv">
+        <input type="text" class="bg-gray-500 w-full h-32 p-4 text-4xl" id="calculatorInputBox">
+        <p class="hidden text-red-600 text-lg" id="errorMessage"></p>
+        <div id="calculatorButtonsDiv" class="grid grid-cols-4 gap-4 p-6"></div>
+    </div>
+</body>
+
+</html>
+<script>
+    const calculatorButtons = ['7', '8', '9', '+', '4', '5', '6', '-', '1', '2', '3', '*', 'C', '0', '.', '/', '(', ')', '&#x232B;', '='];
+
+    const calculatorInputBox = document.getElementById('calculatorInputBox');
+    const calculatorButtonsDiv = document.getElementById('calculatorButtonsDiv');
+    const errorMessage = document.getElementById('errorMessage');
+    displayCalcButtons();
+    function displayCalcButtons() {
+        let buttonNo = 0;
+        calculatorButtons.forEach(element => {
+            buttonNo++;
+            const calcButton = document.createElement('button');
+            calcButton.type = "button";
+            calcButton.innerHTML = element;
+            calcButton.classList = "w-28 h-28 rounded-full text-3xl border-none font-bold";
+
+            if (buttonNo % 4 == 0) { calcButton.classList.add('bg-orange-500', 'text-white'); }
+            else { calcButton.classList.add('bg-white', 'text-black'); }
+
+            calcButton.setAttribute('onclick', `calcButtonFunction('${element}')`);
+            calculatorButtonsDiv.appendChild(calcButton);
+        });
+    }
+    function calcButtonFunction(element) {
+        console.log(element);
+        let stringValue = calculatorInputBox.value;
+        errorMessage.classList.add('hidden');
+        let previousChar = stringValue.slice(stringValue.length - 1);
+
+        if (element==='+'||element==='-'||element==='*'||element==='/'){
+            if(previousChar===element)return;
+        }
+
+        switch (element) {
+            case 'C':
+                calculatorInputBox.value = '';
+                break;
+            case '(':
+                calcButtonFunction('*');
+                calculatorInputBox.value += element;
+                break;
+            case '&#x232B;':
+                calculatorInputBox.value = stringValue.slice(0, -1);
+                break;
+            case '=':
+                if (validateBrackets(calculatorInputBox.value)) {
+                    try {
+                        console.log('from = try block');
+                        calculatorInputBox.value = calculateStringFunction(calculatorInputBox.value);
+                    }
+                    catch {
+                        console.log('from = catch block');
+                        calculatorInputBox.textContent = 'ERROR';
+                    }
+                }
+                else {
+                    errorMessage.classList.remove('hidden');
+                    errorMessage.innerHTML = '* Invalid Input';
+                }
+                break;
+            case '*':
+                calculatorInputBox.value += element;
+                break;
+            default:
+                if (previousChar === ')'&&!(element==='+'||element==='-'||element==='*'||element==='/')) {
+                    calcButtonFunction('*');
+                }
+                calculatorInputBox.value += element;
+                break;
+        }
+    }
+
+    function validateBrackets(stringToValidate) {
+        console.log('from validateBrackets function');
+        const openingBracketCount = stringToValidate.split('(');
+        const closingBracketCount = stringToValidate.split(')');
+        console.log(`${openingBracketCount} and ${closingBracketCount}`)
+        return ((openingBracketCount.length === closingBracketCount.length) ? true : false);
+    }
+
+    function calculateStringFunction(stringToCalculate) {
+        const tokens = stringToCalculate.match(/\d+(\.\d+)?|\+|\-|\*|\/|\(|\)/g);
+        const values = [];
+        const ops = [];
+
+        const priority = op => (op === "+" || op === "-") ? 1 : 2;
+
+        function applyOp() {
+            const b = values.pop();
+            const a = values.pop();
+            const op = ops.pop();
+
+            if (op === "+") values.push(a + b);
+            if (op === "-") values.push(a - b);
+            if (op === "*") values.push(a * b);
+            if (op === "/") values.push(a / b);
+        }
+
+        tokens.forEach(token => {
+            if (!isNaN(token)) {
+                values.push(Number(token));
+            }
+            else if (token === "(") {
+                ops.push(token);
+            }
+            else if (token === ")") {
+                while (ops[ops.length - 1] !== "(") {
+                    applyOp();
+                }
+                ops.pop(); // remove "("
+            }
+            else {
+                while (
+                    ops.length &&
+                    ops[ops.length - 1] !== "(" &&
+                    priority(ops[ops.length - 1]) >= priority(token)
+                ) {
+                    applyOp();
+                }
+                ops.push(token);
+            }
+        });
+        while (ops.length) applyOp();
+
+        return values[0];
+    }
+
+    calculatorInputBox.addEventListener('keydown', (e) => {
+        if(!calculatorButtons.includes(e.key)){
+            event.preventDefault();
+        }
+        if(calculatorButtons.includes(e.key)){
+            event.preventDefault();
+            calcButtonFunction(e.key);
+        }
+        if (e.key === 'Backspace') {
+            calcButtonFunction('&#x232B;');
+        }
+        if (e.key === 'Enter') {
+            calcButtonFunction('=');
+        }
+    })
+
+</script>
